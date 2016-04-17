@@ -3,8 +3,8 @@ from dateutil.relativedelta import relativedelta
 
 
 def remove_nbsp_suffix(raw):
-    nbsp_suffix = '&nbsp;'
-    pos = raw.find(nbsp_suffix)
+    suffix = '&nbsp;'
+    pos = raw.find(suffix)
     if pos != -1:
         return raw[:pos]
     return raw
@@ -23,8 +23,30 @@ def date_range(start_dt, end_dt, step=1):
 def get_season_str(dt):
     month = dt.month
     year = dt.year-2000
-    print month, year
     if month < 10:
-        return '%s-%s' % (year-1, year)
+        return '%02d-%02d' % (year-1, year)
     else:
-        return '%s-%s' % (year, year+1)
+        return '%02d-%02d' % (year, year+1)
+
+
+def parse_float(str):
+    ret = 0.0
+    try:
+        ret = float(str)
+    except ValueError as e:
+        pass
+    except TypeError as e:
+        pass
+    return ret
+
+
+def parse_int(str):
+    ret = 0.0
+    try:
+        ret = int(str)
+    except ValueError as e:
+        pass
+    except TypeError as e:
+        pass
+    return ret
+

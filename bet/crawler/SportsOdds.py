@@ -3,6 +3,7 @@ __author__ = 'tintsing'
 
 class SportsOdds (object):
     def __init__(self):
+        self.vendor = ''
         self.league = ''
         self.start_time = ''
         self.host = ''
@@ -25,7 +26,7 @@ class SportsOdds (object):
          # over / under
         self.ou_1 = 0.0
         self.ou_2 = 0.0
-        self.ou_score = -1
+        self.ou_score = -1.0
         self.ou_result = 0
 
 

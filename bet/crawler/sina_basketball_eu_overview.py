@@ -9,6 +9,7 @@ import logging
 import json
 import CrawlerUtils
 from SportsOdds import BasketballOdds
+import os
 
 
 def page_crawler(dt):
@@ -20,6 +21,7 @@ def page_crawler(dt):
         'season': CrawlerUtils.get_season_str(dt),
         'date': date.strftime(dt, '%Y-%m'),
     }
+    print params
     response = requests.get(base_url, params=params)
     response = json.loads(response.text)
 
@@ -57,16 +59,17 @@ def dump(matches, dt, format):
 
         output_file.close()
     elif format == 'json':
-        output_file = codecs.open('sina_basketball_json/basketball-' + date.strftime(dt, '%Y-%m') + '.json', 'w', encoding='utf-8')
+        output_file = codecs.open(
+            'basketball-' + date.strftime(dt, '%Y-%m') + '.json', 'w', encoding='utf-8')
         json.dump(matches, output_file, ensure_ascii=False)
         output_file.close()
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--from_date', help="the date start to crawler, format %Y-%m-%d(2016-04)")
-parser.add_argument('--end_date', help="end date to stop to crawler, format %Y-%m-%d(2016-04)")
-parser.add_argument('-f', '--output_format', help='output format')
-parser.add_argument('-p', '--output_path', help='output path')
+parser.add_argument('--from_date', help="the date start to crawler, format %Y-%m(2016-04)")
+parser.add_argument('--end_date', help="end date to stop to crawler, format %Y-%m(2016-04)")
+parser.add_argument('-f', '--format', help='output format')
+parser.add_argument('-p', '--path', help='output path')
 args = parser.parse_args()
 if args.from_date:
     from_date = datetime.strptime(args.from_date, '%Y-%m').date()
@@ -76,8 +79,16 @@ if args.end_date:
     end_date = datetime.strptime(args.end_date, '%Y-%m').date()
 else:
     end_date = date.today()
+if args.format:
+    oformat = args.format
+else:
+    oformat = 'json'
+if args.path:
+    path = args.path
+    if not os.path.isdir(path):
+        os.mkdir(path)
+    os.chdir(path)
 
-output_format = 'json'
 for cur_date in CrawlerUtils.date_range(from_date, end_date, step=2):
     matches = page_crawler(cur_date)
-    dump(matches, cur_date, output_format)
+    dump(matches, cur_date, oformat)
