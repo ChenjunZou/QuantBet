@@ -6,6 +6,7 @@ class SportsOdds (object):
         self.vendor = ''
         self.league = ''
         self.start_time = ''
+        self.change_time = ''
         self.host = ''
         self.away = ''
 

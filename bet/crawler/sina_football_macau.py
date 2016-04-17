@@ -53,6 +53,7 @@ def page_crawler(dt, output):
         rt_elems = row.select('td')
         try:
             football = FootballOdds()
+            football.vendor = 'macau'
             football.league = rt_elems[0].get_text()
             football.start_time = dt.strftime('%Y-%m-%d ') + rt_elems[1].get_text()
             team_str = rt_elems[2].select('b')[0].get_text()
@@ -102,7 +103,8 @@ def page_crawler(dt, output):
                 odd_change.host_rank = football.host_rank
                 odd_change.away_rank = football.away_rank
                 odd_change.league = football.league
-                odd_change.start_time = dt.strftime('%Y-') + odd_elems_filter[i * 13].get_text()
+                odd_change.start_time = football.start_time
+                odd_change.change_time = dt.strftime('%Y-') + odd_elems_filter[i * 13].get_text()
                 odd_change.let_odd_1 = parse_float(remove_nbsp_suffix(odd_elems_filter[1 + i * 13].get_text()))
                 odd_change.let_condition = odd_elems_filter[2 + i * 13].get_text()
                 odd_change.let_odd_2 = parse_float(remove_nbsp_suffix(odd_elems_filter[3 + i * 13].get_text()))
@@ -114,21 +116,20 @@ def page_crawler(dt, output):
                 odd_change.ou_score = football.ou_score
                 odd_history.append(odd_change)
 
-            if output == 'text':
-                output_file = codecs.open(dt_str + '.txt', 'w', encoding='UTF-8')
+    if output == 'text':
+        output_file = codecs.open(dt_str + '.txt', 'w', encoding='UTF-8')
+        for item in odd_history:
+            output_file.write(unicode(item))
+        output_file.close()
+    elif output == 'json':
+        output_file = codecs.open('football-%s-%s.json' % ('macau', date.strftime(dt, '%Y-%m-%d')),
+                                  'w', encoding='utf-8')
 
-                for item in odd_history:
-                    output_file.write(unicode(item))
-                output_file.close()
-            elif output == 'json':
-                output_file = codecs.open('football-%s-%s.json' % ('macau', date.strftime(dt, '%Y-%m-%d')),
-                                          'w', encoding='utf-8')
+        def fdefault(o):
+            return o.__dict__
 
-                def fdefault(o):
-                    return o.__dict__
-
-                json.dump(odd_history, output_file, ensure_ascii=False, default=fdefault)
-                output_file.close()
+        json.dump(odd_history, output_file, ensure_ascii=False, default=fdefault)
+        output_file.close()
 
 
 parser = argparse.ArgumentParser()
