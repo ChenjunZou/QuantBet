@@ -12,7 +12,7 @@ import json
 from FootballOdds import FootballOdds
 from CrawlerUtils import remove_nbsp_suffix, parse_float, parse_int, date_range
 import os
-
+import constants
 
 def page_crawler(dt, output):
     logging.info("processing the data of %s" % dt)
@@ -69,7 +69,8 @@ def page_crawler(dt, output):
 
             football.let_odd_1 = parse_float(remove_nbsp_suffix(rt_elems[3].get_text()))
             football.let_odd_2 = parse_float(remove_nbsp_suffix(rt_elems[5].get_text()))
-            football.let_condition = rt_elems[4].get_text()
+            football.let_condition = constants.HANDICAP_MAP.get(rt_elems[4].get_text().strip())
+            # print football.let_condition, rt_elems[4].get_text().strip()
 
             football.win_odd = parse_float(remove_nbsp_suffix(rt_elems[6].get_text()))
             football.draw_odd = parse_float(remove_nbsp_suffix(rt_elems[7].get_text()))
@@ -98,6 +99,7 @@ def page_crawler(dt, output):
 
             for i in xrange(odds_change_size):
                 odd_change = FootballOdds()
+                odd_change.vendor = 'macau'
                 odd_change.host = football.host
                 odd_change.away = football.away
                 odd_change.host_rank = football.host_rank
@@ -106,7 +108,7 @@ def page_crawler(dt, output):
                 odd_change.start_time = football.start_time
                 odd_change.change_time = dt.strftime('%Y-') + odd_elems_filter[i * 13].get_text()
                 odd_change.let_odd_1 = parse_float(remove_nbsp_suffix(odd_elems_filter[1 + i * 13].get_text()))
-                odd_change.let_condition = odd_elems_filter[2 + i * 13].get_text()
+                odd_change.let_condition = constants.HANDICAP_MAP.get(odd_elems_filter[2 + i * 13].get_text().strip())
                 odd_change.let_odd_2 = parse_float(remove_nbsp_suffix(odd_elems_filter[3 + i * 13].get_text()))
                 odd_change.win_odd = parse_float(remove_nbsp_suffix(odd_elems_filter[4 + i * 13].get_text()))
                 odd_change.draw_odd = parse_float(remove_nbsp_suffix(odd_elems_filter[5 + i * 13].get_text()))

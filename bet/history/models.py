@@ -21,52 +21,51 @@ class FootballGame(models.Model):
 class FootballHistorySummary(models.Model):
     game = models.ForeignKey(FootballGame)
     vendor = models.CharField(verbose_name='bet vendor', max_length=64)
-    idt = models.DateTimeField(verbose_name='initial odds datetime')
-    iHC = models.DecimalField(default=Decimal('0.00'), decimal_places=2, max_digits=15,
+    idt = models.DateTimeField(null=True, blank=True, verbose_name='initial odds datetime')
+    iHC = models.DecimalField(null=True, default=Decimal('0.00'), decimal_places=2, max_digits=15,
                               verbose_name='initial handicap' )
-    iOU = models.DecimalField(default=Decimal('0.00'), decimal_places=2, max_digits=15,
+    iOU = models.DecimalField(null=True, default=Decimal('0.00'), decimal_places=2, max_digits=15,
                               verbose_name='initial over/under')
-    iWO = models.FloatField(verbose_name='initial win odd')
-    iDO = models.FloatField(verbose_name='initial draw odd')
-    iLO = models.FloatField(verbose_name='initial lose odd')
-    iHCW = models.FloatField(verbose_name='initial win odd given handicap')
-    iHCD = models.FloatField(verbose_name='initial draw odd given handicap')
-    iHCL = models.FloatField(verbose_name='initial lose odd given handicap')
-    iOUW = models.FloatField(verbose_name='initial win odd given over/under')
-    iOUL = models.FloatField(verbose_name='initial lose odd given over/under')
+    iWO = models.FloatField(null=True, verbose_name='initial win odd')
+    iDO = models.FloatField(null=True, verbose_name='initial draw odd')
+    iLO = models.FloatField(null=True, verbose_name='initial lose odd')
+    iHCW = models.FloatField(null=True, verbose_name='initial win odd given handicap')
+    iHCD = models.FloatField(null=True, verbose_name='initial draw odd given handicap')
+    iHCL = models.FloatField(null=True, verbose_name='initial lose odd given handicap')
+    iOUW = models.FloatField(null=True, verbose_name='initial win odd given over/under')
+    iOUL = models.FloatField(null=True, verbose_name='initial lose odd given over/under')
 
-    fHC = models.DecimalField(default=Decimal('0.00'), decimal_places=2, max_digits=15,
+    fHC = models.DecimalField(null=True, default=Decimal('0.00'), decimal_places=2, max_digits=15,
                               verbose_name='final handicap')
-    fOU = models.DecimalField(default=Decimal('0.00'), decimal_places=2, max_digits=15,
+    fOU = models.DecimalField(null=True, default=Decimal('0.00'), decimal_places=2, max_digits=15,
                               verbose_name='final over/under')
-    fWO = models.FloatField(verbose_name='final win odd')
-    fDO = models.FloatField(verbose_name='final draw odd')
-    fLO = models.FloatField(verbose_name='final lose odd')
-    fHCW = models.FloatField(verbose_name='final win odd given handicap')
-    fHCL = models.FloatField(verbose_name='final lose odd given handicap')
-    fOUW = models.FloatField(verbose_name='final win odd given over/under')
-    fOUL = models.FloatField(verbose_name='final lose odd given over/under')
+    fWO = models.FloatField(null=True, verbose_name='final win odd')
+    fDO = models.FloatField(null=True, verbose_name='final draw odd')
+    fLO = models.FloatField(null=True, verbose_name='final lose odd')
+    fHCW = models.FloatField(null=True, verbose_name='final win odd given handicap')
+    fHCL = models.FloatField(null=True, verbose_name='final lose odd given handicap')
+    fOUW = models.FloatField(null=True, verbose_name='final win odd given over/under')
+    fOUL = models.FloatField(null=True, verbose_name='final lose odd given over/under')
 
     def __unicode__(self):
         return u'%s %s' % (self.game, self.vendor)
 
 
-class FootballDetail(models.Model):
+class FootballDetails(models.Model):
     summary = models.ForeignKey(FootballHistorySummary)
-    cdt = models.DateTimeField(verbose_name='initial odds datetime')
-    cHC = models.DecimalField(default=Decimal('0.00'), decimal_places=2, max_digits=15,
+    change_datetime = models.DateTimeField(verbose_name='initial odds datetime')
+    cHC = models.DecimalField(null=True, default=Decimal('0.00'), decimal_places=2, max_digits=15,
                               verbose_name='initial handicap')
-    cOU = models.DecimalField(default=Decimal('0.00'), decimal_places=2, max_digits=15,
+    cOU = models.DecimalField(null=True, default=Decimal('0.00'), decimal_places=2, max_digits=15,
                               verbose_name='initial over/under')
-    cWO = models.FloatField(verbose_name='initial win odd')
-    cDO = models.FloatField(verbose_name='initial draw odd')
-    cLO = models.FloatField(verbose_name='initial lose odd')
-    cHCW = models.FloatField(verbose_name='initial win odd given handicap')
-    cHCD = models.FloatField(verbose_name='initial draw odd given handicap')
-    cHCL = models.FloatField(verbose_name='initial lose odd given handicap')
-    cOUW = models.FloatField(verbose_name='initial win odd given over/under')
-    cOUL = models.FloatField(verbose_name='initial lose odd given over/under')
+    cWO = models.FloatField(null=True, verbose_name='initial win odd')
+    cDO = models.FloatField(null=True, verbose_name='initial draw odd')
+    cLO = models.FloatField(null=True, verbose_name='initial lose odd')
+    cHCW = models.FloatField(null=True, verbose_name='initial win odd given handicap')
+    cHCL = models.FloatField(null=True, verbose_name='initial lose odd given handicap')
+    cOUW = models.FloatField(null=True, verbose_name='initial win odd given over/under')
+    cOUL = models.FloatField(null=True, verbose_name='initial lose odd given over/under')
 
     def __unicode__(self):
-        return u'%s %s' % (self.summary, self.cdt)
+        return u'%s %s' % (self.summary, self.change_datetime)
 
