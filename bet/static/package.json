@@ -1,0 +1,13 @@
+{
+    "name": "QuantBet Enterprise"
+  , "version": "0.0.1"
+  , "private": true
+  , "dependencies": {
+      "bootstrap": ">=3.3.6"
+    , "jquery": ">=2.2.3"
+    , "datetimepicker": ">=0.1.26"
+    , "jstree": ">=3.3.0"
+    , "highcharts": ">=4.2.4"
+    , "uploadify": ">=1.0.7"
+  }
+}
