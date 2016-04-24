@@ -1,0 +1,32 @@
+<div class="row">
+  <form class="form-inline" id="condition-form" method="get">{% csrf_token %}
+    <div class="col-xs-2">
+      <label>起始时间:</label>
+      <input type="text" class="form-control input-with-label" data-field="date" data-format="yyyy-MM-dd" id="start_date" name="start_date" readonly value="{{ start_date|date:"Y-m-d" }}">
+    </div>
+    <div class="col-xs-2">
+      <label>终止时间:</label>
+      <input type="text" class="form-control input-with-label" data-field="date" data-format="yyyy-MM-dd" id="end_date" name="end_date" value="{{ end_date|date:"Y-m-d" }}">
+    </div>
+    <div id="dtBox"></div>
+    <div class="col-xs-2">
+      <input type="text" class="form-control input-small" id="league_name" name="league_name" placeholder="联赛" value="{{ league_name }}">
+    </div>
+    <div class="col-xs-2">
+      <input type="text" class="form-control input-small" id="team" name="team" placeholder="球队" value="{{ team }}">
+    </div>
+ <!--
+    <div class="col-xs-2">
+      <label>Type:</label>
+      <select class="form-control select-with-label" id="job_type" name="job_type">
+        <option value=""></option>
+        <option value="MR"{% if job_type == "MR"%} selected {% endif %}>mr</option>
+        <option value="SPARK"{% if job_type == "SPARK"%} selected {% endif %}>spark</option>
+      </select>
+    </div>
+    -->
+    <div class="col-cxs-1">
+      <button type="submit" class="btn btn-default">Filter</button>
+    </div>
+  </form>
+</div>

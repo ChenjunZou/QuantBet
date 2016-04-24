@@ -6,11 +6,16 @@
   <title>{%  block title %}QuantBet Portal{% endblock %}</title>
   <link rel="stylesheet" href="{{ STATIC_URL }}/bootstrap/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="{{ STATIC_URL }}/jstree/dist/themes/default/style.min.css">
-  <!--<link rel="stylesheet" href="{{ STATIC_URL }}/js/bootstrap/css/custom-bootstrap.css"/>-->
-  <link rel="stylesheet" href="{{ STATIC_URL }}/datatables.net-bs/css/dataTables.bootstrap.css"/>
+  <link rel="stylesheet" href="{{ STATIC_URL }}/css/bootstrap/custom-bootstrap.css"/>
+  <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.css">
   <link rel="stylesheet" href="{{ STATIC_URL }}/datetimepicker/dist/DateTimePicker.css">
-  {% block css %}
-  {% endblock %}
+  <style>
+    body {
+      padding-top: 60px;
+    }
+    {% block css %}
+    {% endblock %}
+  </style>
 </head>
 
 <body>
@@ -53,14 +58,25 @@
         </div><!--/.nav-collapse -->
       </div>
     </nav>
-
+<!--main-container-part-->
+    <!--
+      <div id="content">
+          <div id="content-header">
+              <div id="breadcrumb">
+                  {% block header %}
+                  {% endblock %}
+              </div>
+          </div>
+          {% block main_panel %}
+          {% endblock %}
+      </div>
+     -->
 <div class="container">
-  {% block content %}{% endblock %}
-  <hr>
+  {% block main-panel %}{% endblock %}
 </div>
 
 <footer class="footer">
-  <div class="container">
+  <div>
     <div style="-moz-transform: scaleX(-1); -o-transform: scaleX(-1); -webkit-transform: scaleX(-1); transform: scaleX(-1); display: inline-block;">
       &copy;
     </div>
@@ -70,7 +86,7 @@
 
 <script src="{{ STATIC_URL }}/jquery/dist/jquery.min.js"></script>
 <script src="{{ STATIC_URL }}/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="{{ STATIC_URL }}/datatables.net-bs/js/dataTables.bootstrap.js"></script>
+<script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.11/js/jquery.dataTables.js"></script>
 <script src="{{ STATIC_URL }}highcharts/highcharts.js"></script>
 <script src="{{ STATIC_URL }}datetimepicker/dist/DateTimePicker.min.js"></script>
 {% block script %}

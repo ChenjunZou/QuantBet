@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Football Games:{% endblock %}
+
+{% block main-panel %}
+{% include "history/form_inline.html" %}
+<div class="row">
+  <table id="football-history-table" class="table table-hover table-striped">
+    <thead>
+      <tr>
+        <th>开球时间</th>
+        <th>联赛</th>
+        <th>主队</th>
+        <th>客队</th>
+        <th>比分</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for game in games %}
+    <tr>
+      <td>{{ game.datetime|date:"Y-m-d H:i" }}</a></td>
+      <td>{{ game.leagueName }}</td>
+      <td>{{ game.homeTeam }}</td>
+      <td>{{ game.awayTeam }}</td>
+      <td>{{ game.homeScore }}:{{ game.awayScore }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{{ STATIC_URL }}js/dtpicker.js"></script>
+<script language="JavaScript">
+$("#football-history-table").DataTable({
+searching: true,
+paging: true,
+lengthMenu: [[10], [50]],
+order: [[ 0, 'desc' ]],
+})
+</script>
+<script>
+  $("#football-history-table_wrapper").css('margin-top', '20px')
+</script>
+{% endblock %}

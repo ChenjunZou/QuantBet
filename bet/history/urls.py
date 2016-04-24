@@ -2,6 +2,6 @@ from django.conf.urls import patterns, url
 
 urlpatterns = patterns(
   '',
-  url(r'^$', 'history.views.index', name='default'),
-  url(r'^index$', 'history.views.index', name='index'),
+  url(r'^$', 'history.views.football', name='default'),
+  url(r'^football$', 'history.views.football', name='football'),
 )
