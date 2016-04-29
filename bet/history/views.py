@@ -47,33 +47,43 @@ def json_get_football_odds(request, gameID):
     game = db_utils.get_football_game_by_id(gameID)
     # params contain 4 serials : win, lose, draw, and x-axis
     parse_serial(game, params)
-    return HttpResponse(json.dumps(params),  content_type="application/json")
+    return HttpResponse(json.dumps(params,default=str),  content_type="application/json")
 
 
 def parse_serial(game, params):
     wins = list()
     draws = list()
     loses = list()
+    ous = list()
+    handicaps = list()
     win_rows = defaultdict(list)
     draw_rows = defaultdict(list)
     lose_rows = defaultdict(list)
+    handicap_rows = defaultdict(list)
+    ou_rows = defaultdict(list)
+
     summaries = db_utils.get_odd_summary(game)
     start_time = db_utils.get_odd_start_time(game)
     end_time = game.datetime
     x_names = get_x_names(start_time, end_time)
     params['x_names'] = x_names
     for summary in summaries:
-        win_rows[summary.vendor].append({'x': 0, 'y': summary.iWO})
-        draw_rows[summary.vendor].append({'x': 0, 'y': summary.iDO})
-        lose_rows[summary.vendor].append({'x': 0, 'y': summary.iLO})
+        win_rows[summary.vendor].append({'x': 0, 'y': summary.iWO, 'dt': summary.idt})
+        draw_rows[summary.vendor].append({'x': 0, 'y': summary.iDO, 'dt': summary.idt})
+        lose_rows[summary.vendor].append({'x': 0, 'y': summary.iLO, 'dt': summary.idt})
+        ou_rows[summary.vendor].append({'x': 0, 'y': float(summary.iOU), 'dt': summary.idt})
+        handicap_rows[summary.vendor].append({'x': 0, 'y': float(summary.iHC), 'dt': summary.idt})
         details = db_utils.get_odd_details(summary)
         for detail in details:
             time = detail.change_datetime.strftime("%d-%H:%M")
             try:
                 x_index = x_names.index(time)
-                win_rows[summary.vendor].append({'x': x_index, 'y': detail.cWO})
-                draw_rows[summary.vendor].append({'x': x_index, 'y': detail.cDO})
-                lose_rows[summary.vendor].append({'x': x_index, 'y': detail.cLO})
+
+                win_rows[summary.vendor].append({'x': x_index, 'y': detail.cWO, 'dt': detail.change_datetime})
+                draw_rows[summary.vendor].append({'x': x_index, 'y': detail.cDO, 'dt': detail.change_datetime})
+                lose_rows[summary.vendor].append({'x': x_index, 'y': detail.cLO, 'dt': detail.change_datetime})
+                ou_rows[summary.vendor].append({'x': x_index, 'y': float(detail.cOU), 'dt': detail.change_datetime})
+                handicap_rows[summary.vendor].append({'x': x_index, 'y': float(detail.cHC), 'dt': detail.change_datetime})
             except ValueError as e:
                 logger.exception('time {} is not in x_names, message {}', time, e.message)
                 pass
@@ -82,10 +92,14 @@ def parse_serial(game, params):
         wins.append({'name': row_key, 'data': win_rows.get(row_key)})
         draws.append({'name': row_key, 'data': draw_rows.get(row_key)})
         loses.append({'name': row_key, 'data': lose_rows.get(row_key)})
+        handicaps.append({'name': row_key, 'data': handicap_rows.get(row_key)})
+        ous.append({'name': row_key, 'data': ou_rows.get(row_key)})
 
     params['odd_win'] = wins
     params['odd_draw'] = draws
     params['odd_lose'] = loses
+    params['handicap'] = handicaps
+    params['over_under'] = ous
 
 
 def get_x_names(start_time, end_time):

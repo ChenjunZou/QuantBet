@@ -1,5 +1,6 @@
 import datetime
 import logging
+
 __author__ = 'tintsing'
 
 logger = logging.getLogger("bet")
@@ -50,4 +51,5 @@ def get_param(request, param_name, default='', cookie=False, meta=False):
     if meta:
         return request.META[param_name]
     return default
+
 
