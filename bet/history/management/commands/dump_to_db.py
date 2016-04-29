@@ -4,10 +4,10 @@ __author__ = 'tintsing'
 from django.core.management.base import BaseCommand, CommandError
 import os
 import json
-from history import models
-from datetime import datetime
+from history import models, db_utils
+from datetime import datetime,date
 from django.utils import timezone
-
+import re
 
 class Command(BaseCommand):
     args = ''
@@ -16,6 +16,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('-p', '--data_path', dest='path', help='the data directory')
         parser.add_argument('-f', '--format', dest='format', help='the data format')
+        parser.add_argument('-s', '--start_date', dest='start_date', help='the start date')
 
     def handle(self, *args, **options):
         self.stdout.write("args: %r\n" % (args, ))
@@ -29,11 +30,21 @@ class Command(BaseCommand):
             input_format = options.get('format')
         else:
             input_format = 'json'
-
+        if options.get('start_date'):
+            start_date = options.get('start_date')
+        else:
+            start_date = '1970-01-01'
         file_list = os.listdir(path)
         os.chdir(path)
+
         for filename in file_list:
             f = open(filename)
+            filenamedate = filename[15:25]
+            if filenamedate < start_date:
+                self.stdout.write('skip %s because it is earlier than start date %s' % (filenamedate, start_date))
+                continue
+            self.stdout.write('filename: %s\n' % filename)
+            summaries = []
             json_list = json.load(f, encoding='utf-8')
             for obj in json_list:
                 host = obj.get('host')
@@ -84,7 +95,6 @@ class Command(BaseCommand):
                                    'fOUW': fOUW,
                                    'fOUL': fOUL,
                                })
-                game_summary.save()
                 # print 'is summary created %s' % created
                 if not created:
                     ctime = obj.get('change_time')
@@ -104,3 +114,24 @@ class Command(BaseCommand):
                                            cOUL=fOUL,
                                        )
                         game_details.save()
+                else:
+                    game_summary.save()
+                    summaries.append(game_summary)
+            for summary in summaries:
+                try:
+                    detail = db_utils.get_init_detail(summary)
+                    summary.idt = detail.change_datetime
+                    summary.iHC = detail.cHC
+                    summary.iOU = detail.cOU
+                    summary.iWO = detail.cWO
+                    summary.iDO = detail.cDO
+                    summary.iLO = detail.cLO
+                    summary.iHCW = detail.cHCW
+                    summary.iHCL = detail.cHCL
+                    summary.iOUW = detail.cOUW
+                    summary.iOUL = detail.cOUL
+                    summary.save()
+                except Exception:
+                    print('no detail found for summary %s' % summary)
+
+

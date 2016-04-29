@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django.db import models
@@ -20,6 +21,7 @@ class FootballGame(models.Model):
 
 class FootballHistorySummary(models.Model):
     game = models.ForeignKey(FootballGame)
+    VENDOR_CHOICES = (('macau', '澳盘'),)
     vendor = models.CharField(verbose_name='bet vendor', max_length=64)
     idt = models.DateTimeField(null=True, blank=True, verbose_name='initial odds datetime')
     iHC = models.DecimalField(null=True, default=Decimal('0.00'), decimal_places=2, max_digits=15,
@@ -30,7 +32,6 @@ class FootballHistorySummary(models.Model):
     iDO = models.FloatField(null=True, verbose_name='initial draw odd')
     iLO = models.FloatField(null=True, verbose_name='initial lose odd')
     iHCW = models.FloatField(null=True, verbose_name='initial win odd given handicap')
-    iHCD = models.FloatField(null=True, verbose_name='initial draw odd given handicap')
     iHCL = models.FloatField(null=True, verbose_name='initial lose odd given handicap')
     iOUW = models.FloatField(null=True, verbose_name='initial win odd given over/under')
     iOUL = models.FloatField(null=True, verbose_name='initial lose odd given over/under')

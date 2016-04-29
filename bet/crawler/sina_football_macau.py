@@ -10,9 +10,12 @@ import argparse
 import logging
 import json
 from FootballOdds import FootballOdds
-from CrawlerUtils import remove_nbsp_suffix, parse_float, parse_int, date_range
+from CrawlerUtils import remove_nbsp_suffix, parse_float, parse_int, date_range, check_if_last_year
 import os
-import constants
+from constants import HANDICAP_MAP
+
+logger = logging.getLogger("bet")
+
 
 def page_crawler(dt, output):
     logging.info("processing the data of %s" % dt)
@@ -30,7 +33,7 @@ def page_crawler(dt, output):
                 "Connection": "keep-alive",
                 "Content-Type": "application/json",
     }
-    #logging.info(payload)
+
     print payload
     response = requests.post(base_url, params=payload, headers=headers)
 
@@ -64,12 +67,12 @@ def page_crawler(dt, output):
                 football.host_rank = parse_int(match.group(2))
                 football.away_rank = parse_int(match.group(5))
             else:
-                logging.warning(u'could not parse team string %s' % team_str)
+                logger.exception(u'could not parse team string %s' % team_str)
                 raise ValueError()
 
             football.let_odd_1 = parse_float(remove_nbsp_suffix(rt_elems[3].get_text()))
             football.let_odd_2 = parse_float(remove_nbsp_suffix(rt_elems[5].get_text()))
-            football.let_condition = constants.HANDICAP_MAP.get(rt_elems[4].get_text().strip())
+            football.let_condition = HANDICAP_MAP.get(rt_elems[4].get_text().strip())
             # print football.let_condition, rt_elems[4].get_text().strip()
 
             football.win_odd = parse_float(remove_nbsp_suffix(rt_elems[6].get_text()))
@@ -107,8 +110,10 @@ def page_crawler(dt, output):
                 odd_change.league = football.league
                 odd_change.start_time = football.start_time
                 odd_change.change_time = dt.strftime('%Y-') + odd_elems_filter[i * 13].get_text()
+                if check_if_last_year(odd_change.start_time, odd_change.change_time):
+                    odd_change.change_time = '%s-%s' % (dt.year-1, odd_elems_filter[i * 13].get_text())
                 odd_change.let_odd_1 = parse_float(remove_nbsp_suffix(odd_elems_filter[1 + i * 13].get_text()))
-                odd_change.let_condition = constants.HANDICAP_MAP.get(odd_elems_filter[2 + i * 13].get_text().strip())
+                odd_change.let_condition = HANDICAP_MAP.get(odd_elems_filter[2 + i * 13].get_text().strip())
                 odd_change.let_odd_2 = parse_float(remove_nbsp_suffix(odd_elems_filter[3 + i * 13].get_text()))
                 odd_change.win_odd = parse_float(remove_nbsp_suffix(odd_elems_filter[4 + i * 13].get_text()))
                 odd_change.draw_odd = parse_float(remove_nbsp_suffix(odd_elems_filter[5 + i * 13].get_text()))
@@ -124,7 +129,7 @@ def page_crawler(dt, output):
             output_file.write(unicode(item))
         output_file.close()
     elif output == 'json':
-        output_file = codecs.open('football-%s-%s.json' % ('macau', date.strftime(dt, '%Y-%m-%d')),
+        output_file = codecs.open('football_%s_%s.json' % ('macau', date.strftime(dt, '%Y-%m-%d')),
                                   'w', encoding='utf-8')
 
         def fdefault(o):

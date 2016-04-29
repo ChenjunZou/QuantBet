@@ -1,0 +1,11 @@
+1. set up environment
+install Mysql
+install python, pip, virtualenv
+pip -r requirements.txt
+cd bet/static
+npm install
+...
+
+2. Django database setup
+python manage.py sqlmigrate history 0001
+python manage.py migrate

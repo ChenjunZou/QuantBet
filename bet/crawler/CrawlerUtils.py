@@ -1,5 +1,7 @@
 __author__ = 'tintsing'
 from dateutil.relativedelta import relativedelta
+from datetime import datetime
+from constants import STANDARD_TIME_FORMAT
 
 
 def remove_nbsp_suffix(raw):
@@ -29,10 +31,10 @@ def get_season_str(dt):
         return '%02d-%02d' % (year, year+1)
 
 
-def parse_float(str):
+def parse_float(s):
     ret = 0.0
     try:
-        ret = float(str)
+        ret = float(s)
     except ValueError as e:
         pass
     except TypeError as e:
@@ -40,13 +42,25 @@ def parse_float(str):
     return ret
 
 
-def parse_int(str):
+def parse_int(s):
     ret = 0.0
     try:
-        ret = int(str)
+        ret = int(s)
     except ValueError as e:
         pass
     except TypeError as e:
         pass
     return ret
+
+
+def check_if_last_year(first_str, second_str):
+    # print first_str, second_str
+    first = datetime.strptime(first_str, STANDARD_TIME_FORMAT)
+    second = datetime.strptime(second_str, STANDARD_TIME_FORMAT)
+    if first < second:
+        # double check
+        if first.month == 1 and second.month == 12:
+            # almost sure
+            return True
+    return False
 

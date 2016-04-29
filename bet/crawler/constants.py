@@ -38,3 +38,4 @@ HANDICAP_MAP = {
     u'受三球': -3.0,
 }
 
+STANDARD_TIME_FORMAT = '%Y-%m-%d %H:%M'
