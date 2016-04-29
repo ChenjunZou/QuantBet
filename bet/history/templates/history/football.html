@@ -51,7 +51,10 @@
         <td>{{ game.homeTeam }}</td>
         <td>{{ game.awayTeam }}</td>
         <td>{{ game.homeScore }}:{{ game.awayScore }}</td>
-        <td><a href="#" onclick="return showOdds('{{ game.id }}')" class="btn btn-xs btn-primary"> >> </a></td>
+        <td>
+          <a href="#" class="btn btn-xs btn-primary"
+               onclick="return showOdds('{{ game.id }}', '{{ game.homeTeam }}' + ' vs. ' + '{{ game.awayTeam }}')"> >>
+          </a></td>
       </tr>
       {% endfor %}
       </tbody>
@@ -59,6 +62,7 @@
   </div>
 
   <div id="football-odd-detail">
+    <p id="team_name"></p>
     <ul class="nav nav-tabs nav-justified">
     <li><a data-toggle="pill" href="#handicap_over_under">让球/大小分</a></li>
     <li><a data-toggle="pill" href="#odds-stats">赔率</a></li>
@@ -94,7 +98,7 @@ $("#football-history-table").DataTable({
 })
 </script>
 <script language="javascript">
-function showOdds(gameID)
+function showOdds(gameID, teamName)
 {
   var url = '/history/json/get_odds/' + gameID
   $.ajax({
@@ -106,6 +110,7 @@ function showOdds(gameID)
           odd_layout(data);
       }
   });
+  $('#team_name').html(teamName)
 }
 </script>
 <script language="JavaScript">

@@ -32,12 +32,11 @@ def football_impl(request):
     params['end_date'] = end_date
     params['league_name'] = league_name
     params['team'] = team
-    print start_date, end_date
     games = db_utils.get_all_football_games().filter(datetime__gte=start_date, datetime__lte=end_date)
     if league_name != '':
-        games = games.filter(league_name__like=league_name)
+        games = games.filter(leagueName__contains=league_name)
     if team != '':
-        games = games.filter(team__like=team)
+        games = games.filter(team__contains=team)
     params['games'] = games
     return render_to_response("history/football.html", params, context_instance=RequestContext(request))
 
