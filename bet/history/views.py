@@ -10,7 +10,7 @@ from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 
 logger = logging.getLogger("bet")
-
+FLOAT_THRESHOLD = 0.01
 
 # Create your views here.
 def football(request):
@@ -67,21 +67,17 @@ def parse_serial(game, params):
     x_names = get_x_names(start_time, end_time)
     params['x_names'] = x_names
     for summary in summaries:
-        win_rows[summary.vendor].append({'x': 0, 'y': summary.iWO, 'dt': summary.idt})
-        draw_rows[summary.vendor].append({'x': 0, 'y': summary.iDO, 'dt': summary.idt})
-        lose_rows[summary.vendor].append({'x': 0, 'y': summary.iLO, 'dt': summary.idt})
-        ou_rows[summary.vendor].append({'x': 0, 'y': float(summary.iOU), 'dt': summary.idt})
-        handicap_rows[summary.vendor].append({'x': 0, 'y': float(summary.iHC), 'dt': summary.idt})
         details = db_utils.get_odd_details(summary)
         for detail in details:
             time = detail.change_datetime.strftime("%d-%H:%M")
             try:
                 x_index = x_names.index(time)
-
-                win_rows[summary.vendor].append({'x': x_index, 'y': detail.cWO, 'dt': detail.change_datetime})
-                draw_rows[summary.vendor].append({'x': x_index, 'y': detail.cDO, 'dt': detail.change_datetime})
-                lose_rows[summary.vendor].append({'x': x_index, 'y': detail.cLO, 'dt': detail.change_datetime})
-                ou_rows[summary.vendor].append({'x': x_index, 'y': float(detail.cOU), 'dt': detail.change_datetime})
+                if detail.cWO >= FLOAT_THRESHOLD:
+                    win_rows[summary.vendor].append({'x': x_index, 'y': detail.cWO, 'dt': detail.change_datetime})
+                    draw_rows[summary.vendor].append({'x': x_index, 'y': detail.cDO, 'dt': detail.change_datetime})
+                    lose_rows[summary.vendor].append({'x': x_index, 'y': detail.cLO, 'dt': detail.change_datetime})
+                if detail.cOU >= FLOAT_THRESHOLD:
+                    ou_rows[summary.vendor].append({'x': x_index, 'y': float(detail.cOU), 'dt': detail.change_datetime})
                 handicap_rows[summary.vendor].append({'x': x_index, 'y': float(detail.cHC), 'dt': detail.change_datetime})
             except ValueError as e:
                 logger.exception('time {} is not in x_names, message {}', time, e.message)
