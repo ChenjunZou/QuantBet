@@ -5,17 +5,17 @@ from django.core.management.base import BaseCommand, CommandError
 import os
 import json
 from history import models, db_utils
-from datetime import datetime,date
+from datetime import datetime, date
 from django.utils import timezone
 import re
 
+
 class Command(BaseCommand):
     args = ''
-    help = 'dump data from file'
+    help = 'load Sina football history data from file'
 
     def add_arguments(self, parser):
         parser.add_argument('-p', '--data_path', dest='path', help='the data directory')
-        parser.add_argument('-f', '--format', dest='format', help='the data format')
         parser.add_argument('-s', '--start_date', dest='start_date', help='the start date')
 
     def handle(self, *args, **options):
@@ -26,10 +26,6 @@ class Command(BaseCommand):
             self.stderr.write("Failed to open data path: ", options['path'])
             return
         path = options['path']
-        if options.get('format'):
-            input_format = options.get('format')
-        else:
-            input_format = 'json'
         if options.get('start_date'):
             start_date = options.get('start_date')
         else:
@@ -60,7 +56,7 @@ class Command(BaseCommand):
                 '''
                 {"league": "西甲", "win_odd": 1.9, "ou_result": 0, "let_odds_1": 1.94, "let_result": 0, "start_time": "2016-04-17 00:15",
                  "ou_score": -1, "host_rank": "10", "odd_result": 0, "ou_1": 0.0, "host": "拉斯彭马斯", "host_score": "1",
-                 "let_condition": "半球 ", "lose_odd": 3.55, "away_rank": "18", "draw_odd": 3.3, "away_score": "1", "let_odd_1": 0.0,
+                 "let_score": 0.5, "lose_odd": 3.55, "away_rank": "18", "draw_odd": 3.3, "away_score": "1", "let_odd_1": 0.0,
                   "away": "希杭", "ou_2": 0.0, "let_odd_2": 1.92}
                 '''
                 game, created = models.FootballGame.\
@@ -71,7 +67,7 @@ class Command(BaseCommand):
                                 })
                 game.save()
                 # print 'is game create: %s' % created
-                fHC = obj.get('let_condition')
+                fHC = obj.get('let_score')
                 fOU = obj.get('ou_score')
                 fWO = obj.get('win_odd')
                 fDO = obj.get('draw_odd')
@@ -133,5 +129,4 @@ class Command(BaseCommand):
                     summary.save()
                 except Exception:
                     print('no detail found for summary %s' % summary)
-
 

@@ -9,7 +9,7 @@ from datetime import datetime, date
 import argparse
 import logging
 import json
-from FootballOdds import FootballOdds
+from SportsOdds import FootballOdds
 from CrawlerUtils import remove_nbsp_suffix, parse_float, parse_int, date_range, check_if_last_year
 import os
 from constants import HANDICAP_MAP
@@ -72,7 +72,7 @@ def page_crawler(dt, output):
 
             football.let_odd_1 = parse_float(remove_nbsp_suffix(rt_elems[3].get_text()))
             football.let_odd_2 = parse_float(remove_nbsp_suffix(rt_elems[5].get_text()))
-            football.let_condition = HANDICAP_MAP.get(rt_elems[4].get_text().strip())
+            football.let_score = HANDICAP_MAP.get(rt_elems[4].get_text().strip())
             # print football.let_condition, rt_elems[4].get_text().strip()
 
             football.win_odd = parse_float(remove_nbsp_suffix(rt_elems[6].get_text()))
@@ -113,7 +113,7 @@ def page_crawler(dt, output):
                 if check_if_last_year(odd_change.start_time, odd_change.change_time):
                     odd_change.change_time = '%s-%s' % (dt.year-1, odd_elems_filter[i * 13].get_text())
                 odd_change.let_odd_1 = parse_float(remove_nbsp_suffix(odd_elems_filter[1 + i * 13].get_text()))
-                odd_change.let_condition = HANDICAP_MAP.get(odd_elems_filter[2 + i * 13].get_text().strip())
+                odd_change.let_score = HANDICAP_MAP.get(odd_elems_filter[2 + i * 13].get_text().strip())
                 odd_change.let_odd_2 = parse_float(remove_nbsp_suffix(odd_elems_filter[3 + i * 13].get_text()))
                 odd_change.win_odd = parse_float(remove_nbsp_suffix(odd_elems_filter[4 + i * 13].get_text()))
                 odd_change.draw_odd = parse_float(remove_nbsp_suffix(odd_elems_filter[5 + i * 13].get_text()))
