@@ -46,7 +46,7 @@ def json_get_football_odds(request, gameID):
     game = db_utils.get_football_game_by_id(gameID)
     # params contain 4 serials : win, lose, draw, and x-axis
     parse_serial(game, params)
-    return HttpResponse(json.dumps(params,default=str),  content_type="application/json")
+    return HttpResponse(json.dumps(params, default=str),  content_type="application/json")
 
 
 def parse_serial(game, params):

@@ -6,6 +6,7 @@ import logging
 logger = logging.getLogger("bet")
 
 
+# football db operation
 def get_all_football_games():
     games = models.FootballGame.objects.all()
     return games
@@ -52,3 +53,6 @@ def get_odd_start_time(game):
         return first[0].idt
     else:
         raise Exception
+
+
+# basketball db operation
