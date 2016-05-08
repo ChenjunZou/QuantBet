@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Football Games:{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}/css/history/history-common.css"/>
+{% endblock %}
+{% block main-panel %}
+{% include "history/form_inline.html" %}
+<div id="basketball-history-panel" class="history-panel">
+  <div id='basketball-history' class="history-stats">
+    <table id="basketball-history-table" class="table table-hover table-striped history-table">
+      <thead>
+        <tr>
+          <th>开球时间</th>
+          <th>联赛</th>
+          <th>主队</th>
+          <th>客队</th>
+          <th>比分</th>
+          <th>赔率</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for game in games %}
+      <tr>
+        <td>{{ game.datetime|date:"Y-m-d H:i" }}</a></td>
+        <td>{{ game.league_name }}</td>
+        <td>{{ game.home_name }}</td>
+        <td>{{ game.away_name }}</td>
+        <td>{{ game.home_score }}:{{ game.away_score }}</td>
+        <td>
+          <a href="#" class="btn btn-xs btn-primary"
+               onclick="return showBasketballDetails('{{ game.id }}', '{{ game.home_name }}' + ' vs. ' + '{{ game.away_name }}')"> >>
+          </a></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div id="basketball-history-detail" class="history-detail">
+    <div class="page-header">
+      <h3 id="team_name"></h3>
+    </div>
+    <ul class="nav nav-tabs nav-justified">
+      <li><a data-toggle="pill" href="#odds-stats">赔率</a></li>
+      <li><a data-toggle="pill" href="#handicap">让球</a></li>
+      <li><a data-toggle="pill" href="#overunder">大小分</a></li>
+    </ul>
+    <div id='tab-content' class="tab-content">
+      <div id="odds-stats" class="tab-pane fade in active">
+        <div id="win-panel" class="board divide_by_3" >
+        </div>
+        <div id="lose-panel" class="board divide_by_3" >
+        </div>
+      </div>
+      <div id="handicap" class="tab-pane fade">
+        <div id="handicap-panel" class="board divide_by_2" >
+        </div>
+      </div>
+      <div id="overunder" class="tab-pane fade">
+        <div id="overunder-panel" class="board divide_by_2" >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{{ STATIC_URL }}js/dtpicker.js"></script>
+<script src="{{ STATIC_URL }}js/history/history-common.js"></script>
+<script src="{{ STATIC_URL }}js/history/history-basketball.js"></script>
+{% endblock %}

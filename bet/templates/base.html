@@ -9,13 +9,8 @@
   <link rel="stylesheet" href="{{ STATIC_URL }}/css/bootstrap/custom-bootstrap.css"/>
   <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.11/css/jquery.dataTables.css">
   <link rel="stylesheet" href="{{ STATIC_URL }}/datetimepicker/dist/DateTimePicker.css">
-  <style>
-    body {
-      padding-top: 60px;
-    }
-    {% block css %}
-    {% endblock %}
-  </style>
+  {% block css %}
+  {% endblock %}
 </head>
 
 <body>
@@ -32,18 +27,15 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li><a href="/history/index">历史数据</a></li>
-            <!--
+            <!--<li><a href="/history/index">历史数据</a></li>-->
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="buttion" aria-expaned="false">
-                  ResourceReport<span class="caret"></span></a>
+                  历史数据<span class="caret"></span></a>
               <ul class="dropdown-menu" role="menu">
-                <li><a href="/report/stats_index">Job</a></li>
-                <li><a href="/report/overview">Aggregate Job</a></li>
-                <li><a href="/realtime/overview">RealTime Job</a></li>
+                <li><a href="/history/football">足球数据</a></li>
+                <li><a href="/history/basketball">篮球数据</a></li>
               </ul>
             </li>
-            -->
           </ul>
           <!--
           <ul class="nav navbar-nav navbar-right">

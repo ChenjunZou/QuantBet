@@ -66,35 +66,33 @@ class BasketballHistorySummary(models.Model):
     odd_result = models.IntegerField(null=True)
     hc_result = models.IntegerField(null=True)
     ou_result = models.IntegerField(null=True)
+
     def __unicode__(self):
         return u'%s %s' % (self.game, self.vendor)
 
 
 class BasketballHistoryDetails(models.Model):
     summary = models.ForeignKey(BasketballHistorySummary)
-    datetime = models.DateTimeField(verbose_name='change odds datetime')
+    datetime = models.DateTimeField(null=True, verbose_name='change odds datetime')
     value = models.DecimalField(null=True, default=Decimal('0.00'), decimal_places=2, max_digits=15)
     win_odd = models.FloatField(null=True, verbose_name='win odd')
     draw_odd = models.FloatField(null=True, verbose_name='draw odd')
     lose_odd = models.FloatField(null=True, verbose_name='lose odd')
 
     def __unicode__(self):
-        return u'%s %s' % (self.summary, self.timestamp)
+        return u'%s %s' % (self.summary, self.datetime)
 
 
 class BasketballHistoryOddDetails(BasketballHistoryDetails):
-    def __init__(self):
-        super(BasketballHistoryDetails, self).__init__()
+    pass
 
 
 class BasketballHistoryHCDetails(BasketballHistoryDetails):
-    def __init__(self):
-        super(BasketballHistoryDetails, self).__init__()
+    pass
 
 
-class BasketballHistoryOUOddDetails(BasketballHistoryDetails):
-    def __init__(self):
-        super(BasketballHistoryDetails, self).__init__()
+class BasketballHistoryOUDetails(BasketballHistoryDetails):
+    pass
 
 
 class PlayerInfo(models.Model):

@@ -33,7 +33,7 @@ def page_crawler(dt):
             matches = response['result']['match']
         except Exception as e:
             logging.warn('failed to load the date of month %s, reason %s' % (params['date'], e.message))
-    return matches[0:1]
+    return matches
 
 
 def dump(matches, dt, format):
@@ -120,7 +120,9 @@ def dump(matches, dt, format):
             return o.__dict__
 
         histories = dump_details(detail_history)
+        print 'begin to dump'
         json.dump(histories, output_file, ensure_ascii=False, default=fdefault)
+        print 'dump success %s' % dt
         output_file.close()
 
 

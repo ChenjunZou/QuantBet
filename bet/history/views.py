@@ -41,6 +41,24 @@ def football_impl(request):
     return render_to_response("history/football.html", params, context_instance=RequestContext(request))
 
 
+def basketball(request):
+    params = {}
+    start_date, end_date = parse_date_range(request)
+    league_name = get_param(request, 'league_name', '')
+    team = get_param(request, 'team', '')
+    params['start_date'] = start_date
+    params['end_date'] = end_date
+    params['league_name'] = league_name
+    params['team'] = team
+    games = db_utils.get_all_basketball_games().filter(datetime__gte=start_date, datetime__lte=end_date)
+    if league_name != '':
+        games = games.filter(league_name__contains=league_name)
+    # if team != '':
+    #     games = games.filter(team__contains=team)
+    params['games'] = games
+    return render_to_response("history/basketball.html", params, context_instance=RequestContext(request))
+
+
 def json_get_football_odds(request, gameID):
     params = {}
     game = db_utils.get_football_game_by_id(gameID)

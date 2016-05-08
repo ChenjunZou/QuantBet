@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 import os
 import json
 from history import models, db_utils
-from datetime import datetime,date
+from datetime import datetime, date
 from django.utils import timezone
 import re
 
@@ -64,7 +64,8 @@ class Command(BaseCommand):
                             'round_type': round_type,
                         })
                 game.save()
-                # print 'is game create: %s' % created
+                print '%s %s %s %s\n' % (host, away, league, start_time)
+                print 'is game create: %s' % created
                 iHC = obj.get('origin_let_score')
                 iOU = obj.get('origin_ou_score')
                 iWO = obj.get('origin_win_odd')
@@ -105,37 +106,31 @@ class Command(BaseCommand):
                     dt = datetime.strptime(item.get('dt'), '%Y-%m-%d %H:%M').replace(tzinfo=timezone.utc)
                     odd_change = models.BasketballHistoryOddDetails.objects.create(
                         summary=game_summary,
-                        defaults={
-                            'datetime': dt,
-                            'value': item.get('v'),
-                            'win_odd': item.get('w'),
-                            'lose_odd': item.get('l'),
-                        }
+                        datetime=dt,
+                        value=item.get('v'),
+                        win_odd=item.get('w'),
+                        lose_odd=item.get('l')
                     )
                     odd_change.save()
 
-                for item in odd_history:
+                for item in hc_history:
                     dt = datetime.strptime(item.get('dt'), '%Y-%m-%d %H:%M').replace(tzinfo=timezone.utc)
                     odd_change = models.BasketballHistoryHCDetails.objects.create(
                         summary=game_summary,
-                        defaults={
-                            'datetime': dt,
-                            'value': item.get('v'),
-                            'win_odd': item.get('w'),
-                            'lose_odd': item.get('l'),
-                        }
+                        datetime=dt,
+                        value=item.get('v'),
+                        win_odd=item.get('w'),
+                        lose_odd=item.get('l')
                     )
                     odd_change.save()
 
-                for item in odd_history:
+                for item in ou_history:
                     dt = datetime.strptime(item.get('dt'), '%Y-%m-%d %H:%M').replace(tzinfo=timezone.utc)
                     odd_change = models.BasketballHistoryOUDetails.objects.create(
                         summary=game_summary,
-                        defaults={
-                            'datetime': dt,
-                            'value': item.get('v'),
-                            'win_odd': item.get('w'),
-                            'lose_odd': item.get('l'),
-                        }
+                        datetime=dt,
+                        value=item.get('v'),
+                        win_odd=item.get('w'),
+                        lose_odd=item.get('l')
                     )
                     odd_change.save()

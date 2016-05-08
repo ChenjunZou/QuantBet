@@ -3,36 +3,13 @@
 {% block title %}Football Games:{% endblock %}
 
 {% block css %}
-#football-history-panel {
-  margin-top: 20px;
-  margin-bottom: 20px;
-  height: 1000px;
-}
-#football-history {
-  float: left;
-  width: 50%;
-}
-
-#football-odd-detail {
-  float: right;
-  width: 48%;
-  margin-top: 10px;
-  height: 90%;
-}
-.board {
-  margin-top: 10px;
-  margin-left:30px;
-  margin-right:30px;
-  margin-bottom: 10px;
-  <!--border: 1px solid green;-->
-}
-
+<link rel="stylesheet" href="{{ STATIC_URL }}/css/history/history-common.css"/>
 {% endblock %}
 {% block main-panel %}
 {% include "history/form_inline.html" %}
-<div id="football-history-panel">
-  <div id='football-history'>
-    <table id="football-history-table" class="table table-hover table-striped">
+<div id="football-history-panel" class="history-panel">
+  <div id='football-history' class="history-stats">
+    <table id="football-history-table" class="table table-hover table-striped history-table">
       <thead>
         <tr>
           <th>开球时间</th>
@@ -53,7 +30,7 @@
         <td>{{ game.homeScore }}:{{ game.awayScore }}</td>
         <td>
           <a href="#" class="btn btn-xs btn-primary"
-               onclick="return showOdds('{{ game.id }}', '{{ game.homeTeam }}' + ' vs. ' + '{{ game.awayTeam }}')"> >>
+               onclick="return showFootballDetails('{{ game.id }}', '{{ game.homeTeam }}' + ' vs. ' + '{{ game.awayTeam }}')"> >>
           </a></td>
       </tr>
       {% endfor %}
@@ -61,7 +38,7 @@
     </table>
   </div>
 
-  <div id="football-odd-detail">
+  <div id="football-history-detail" class="history-detail">
     <div class="page-header">
       <h3 id="team_name"></h3>
     </div>
@@ -91,111 +68,6 @@
 
 {% block script %}
 <script src="{{ STATIC_URL }}js/dtpicker.js"></script>
-<script language="JavaScript">
-$("#football-history-table").DataTable({
-    searching: true,
-    paging: true,
-    lengthMenu: [[20, 50], [20, 50]],
-    order: [[ 0, 'desc' ]],
-})
-</script>
-<script language="javascript">
-function showOdds(gameID, teamName)
-{
-  var url = '/history/json/get_odds/' + gameID
-  $.ajax({
-      url: url,
-      type: 'GET',
-      async: true,
-      dataType: "json",
-      success: function (data) {
-          odd_layout(data);
-      }
-  });
-  $('#team_name').html(teamName)
-}
-</script>
-<script language="JavaScript">
-function odd_layout(data) {
-  $('#panel-text').html(data['odd_win'])
-  $('.board').each( function() {
-    var values = [];
-    var title;
-    var mark = this.id;
-    if (mark == 'win-panel') {
-      values = data['odd_win'];
-      title = mark
-    } else if (mark == 'draw-panel') {
-      values = data['odd_draw'];
-      title = mark
-    } else if (mark == 'lose-panel') {
-      values = data['odd_lose'];
-      title = mark
-    } else if (mark == 'handicap-panel') {
-      values = data['handicap'];
-      title = '让球'
-    } else if (mark == 'over_under-panel') {
-      values = data['over_under'];
-      title = '大小分'
-    }
-    $(this).highcharts({
-      chart: {
-        zoomType: 'x',
-        resetZoomButton: {
-          position: {
-            x: 0,
-            y: -30
-          }
-        },
-        width: 500,
-        height: 300,
-      },
-      title: {
-        text: title.toUpperCase(),
-        x: -15 //center
-      },
-      xAxis: {
-        categories: data['x_names'],
-        labels: {
-          rotation: 60,
-          step: 6
-        },
-        style: {
-                   color: 'black',
-                   fontSize: '8px',
-                   fontWeight: 'bold',
-                   fontFamily: 'Verdana, sans-serif'
-        },
-      },
-      yAxis: {
-        title: {
-          text: $(this).id
-        },
-        plotLines: [{
-          value: 0,
-          width: 1,
-          color: '#808080'
-        }],
-        min: 0,
-      },
-      tooltip: {
-        formatter: function() {
-            return '<b>时间: </b>' + this.point.options.dt +'<br/>' +
-                '<b>博彩公司: </b>' + this.point.series.name +'<br/>' +
-                '<b>数值: </b>' + this.point.options.y +'<br/>';
-          }
-      },
-      series: values,
-      noData: {
-        style: {
-          fontWeight: 'bold',
-          fontSize: '15px',
-          color: '#303030'
-        }
-      }
-    });
-  });
-};
-
-</script>
+<script src="{{ STATIC_URL }}js/history/history-common.js"></script>
+<script src="{{ STATIC_URL }}js/history/history-football.js"></script>
 {% endblock %}
