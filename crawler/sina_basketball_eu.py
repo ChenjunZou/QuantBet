@@ -119,9 +119,8 @@ def dump(matches, dt, format):
         def fdefault(o):
             return o.__dict__
 
-        histories = dump_details(detail_history)
         print 'begin to dump'
-        json.dump(histories, output_file, ensure_ascii=False, default=fdefault)
+        json.dump(detail_history, output_file, ensure_ascii=False, default=fdefault)
         print 'dump success %s' % dt
         output_file.close()
 
@@ -132,6 +131,7 @@ def dump_details(overview_history):
     pattern_ou = re.compile('jq_let_score_company_(\d+)')
     histories = []
     for game in overview_history:
+        print game
         game_id = game.bet_id
         company_info = {}
         url_odd_1 = 'http://live.aicai.com/lc/xyo_%s_1_ouzhi.html' % game_id
@@ -160,7 +160,6 @@ def prepare_json(url, url_json, game, pattern, kind, company_info):
 
     companies = bs.select('table.dataListTable tr')
     companies = [company for company in companies if company.get('id') is not None]
-    print len(companies)
     for company in companies:
         vendor = company.select('.company')[0].get_text().strip()
         company_id_str = company.get('id')

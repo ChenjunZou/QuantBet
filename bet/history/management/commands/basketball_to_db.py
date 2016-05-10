@@ -7,7 +7,6 @@ import json
 from history import models, db_utils
 from datetime import datetime, date
 from django.utils import timezone
-import re
 
 
 class Command(BaseCommand):
@@ -64,8 +63,9 @@ class Command(BaseCommand):
                             'round_type': round_type,
                         })
                 game.save()
-                print '%s %s %s %s\n' % (host, away, league, start_time)
-                print 'is game create: %s' % created
+                if created:
+                    self.stdout.write('%s %s %s %s\n' % (host, away, league, start_time))
+
                 iHC = obj.get('origin_let_score')
                 iOU = obj.get('origin_ou_score')
                 iWO = obj.get('origin_win_odd')

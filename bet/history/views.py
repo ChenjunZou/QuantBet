@@ -8,6 +8,7 @@ from utils.utils import get_param, parse_date_range
 import json
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
+from constants import DetailTypes
 
 logger = logging.getLogger("bet")
 FLOAT_THRESHOLD = 0.01
@@ -67,6 +68,30 @@ def json_get_football_odds(request, gameID):
     return HttpResponse(json.dumps(params, default=str),  content_type="application/json")
 
 
+def json_get_basketball_odds(request, gameID):
+    params = {}
+    details = {}
+    game = db_utils.get_basketball_game_by_id(gameID)
+    # params['game'] = game
+    # params contain 4 serials : win, lose, draw, and x-axis
+    for dtype in DetailTypes:
+        detail_info = get_basketball_details(gameID, dtype)
+        details[dtype.name] = detail_info
+    end_time = game.datetime
+    start_time = end_time + relativedelta(days=-2)
+    x_names = get_x_names(start_time, end_time, interval=1)
+    params['x_names'] = x_names
+    parse_serial_basketball(game, details, params)
+    return HttpResponse(json.dumps(params, default=str),  content_type="application/json")
+
+
+def get_basketball_details(game_id, detail_type):
+    game = db_utils.get_basketball_game_by_id(game_id)
+    summaries = db_utils.get_basketball_odd_summary(game)
+    for summary in summaries:
+        yield (summary.vendor, db_utils.get_basketball_details(summary, detail_type))
+
+
 def parse_serial(game, params):
     wins = list()
     draws = list()
@@ -80,8 +105,11 @@ def parse_serial(game, params):
     ou_rows = defaultdict(list)
 
     summaries = db_utils.get_odd_summary(game)
-    start_time = db_utils.get_odd_start_time(game)
     end_time = game.datetime
+    try:
+        start_time = db_utils.get_odd_start_time(game)
+    except:
+        start_time = end_time + relativedelta(days=-1)
     x_names = get_x_names(start_time, end_time)
     params['x_names'] = x_names
     for summary in summaries:
@@ -115,12 +143,52 @@ def parse_serial(game, params):
     params['over_under'] = ous
 
 
-def get_x_names(start_time, end_time):
+def parse_serial_basketball(game, details, params):
+    x_names = params['x_names']
+    for dtype in DetailTypes:
+        win_rows = defaultdict(list)
+        value_rows = defaultdict(list)
+        lose_rows = defaultdict(list)
+        wins = list()
+        values = list()
+        loses = list()
+
+        generator = details[dtype.name]
+        for detail in generator:
+            vendor = detail[0]
+            odd_change_details = detail[1]
+            for ocd in odd_change_details:
+                change_datetime = ocd.datetime.strftime("%d-%H:%M")
+                try:
+                    x_index = x_names.index(change_datetime)
+                    if ocd.value:
+                        value_rows[vendor].append({'x': x_index, 'y': float(ocd.value), 'dt': ocd.datetime})
+                    else:
+                        win_rows[vendor].append({'x': x_index, 'y': float(ocd.win_odd), 'dt': ocd.datetime})
+                        lose_rows[vendor].append({'x': x_index, 'y': float(ocd.lose_odd), 'dt': ocd.datetime})
+                except ValueError as e:
+                    logger.error('time {} is not in x_names, message {}', change_datetime, e.message)
+                    pass
+
+        if dtype == DetailTypes.Odd:
+            for row_key in win_rows.iterkeys():
+                wins.append({'name': row_key, 'data': win_rows.get(row_key)})
+                loses.append({'name': row_key, 'data': lose_rows.get(row_key)})
+        else:
+            for row_key in value_rows.iterkeys():
+                values.append({'name': row_key, 'data': value_rows.get(row_key)})
+        # print vendor, len(wins), len(loses), len(values)
+        params[dtype.name + '_wins'] = wins
+        params[dtype.name + '_loses'] = loses
+        params[dtype.name + '_values'] = values
+
+
+def get_x_names(start_time, end_time, interval=10):
     x_names = []
-    delta = relativedelta(minutes=10)
-    start_time_minute = start_time.minute / 10 * 10
+    delta = relativedelta(minutes=interval)
+    start_time_minute = start_time.minute / interval * interval
     start_time = start_time.replace(minute=start_time_minute, second=0, microsecond=0)
-    end_time_minute = end_time.minute / 10 * 10
+    end_time_minute = end_time.minute / interval * interval
     end_time = end_time.replace(minute=end_time_minute, second=0, microsecond=0)
     current_time = start_time
     while current_time <= end_time:
