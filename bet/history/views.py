@@ -4,7 +4,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
 from django.template import RequestContext
 import db_utils
-from utils.utils import get_param, parse_date_range
+from utils import get_param, parse_date_range
 import json
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
@@ -33,11 +33,32 @@ def football_impl(request):
     params['end_date'] = end_date
     params['league_name'] = league_name
     params['team'] = team
+
+    original_handicap = get_param(request, 'original_handicap', '')
+    original_handicap_host = get_param(request, 'original_handicap_host', '')
+    original_handicap_away = get_param(request, 'original_handicap_away', '')
+    final_handicap = get_param(request, 'final_handicap', '')
+    final_handicap_host = get_param(request, 'final_handicap_host', '')
+    final_handicap_away = get_param(request, 'final_handicap_away', '')
+
+    params['original_handicap'] = original_handicap
+    params['original_handicap_host'] = original_handicap_host
+    params['original_handicap_away'] = original_handicap_away
+
+    params['final_handicap'] = final_handicap
+    params['final_handicap_host'] = final_handicap_host
+    params['final_handicap_away'] = final_handicap_away
+
     games = db_utils.get_all_football_games().filter(datetime__gte=start_date, datetime__lte=end_date)
     if league_name != '':
         games = games.filter(leagueName__contains=league_name)
     if team != '':
         games = games.filter(team__contains=team)
+
+    if original_handicap != '':
+        games = games.filter(footballhistorysummary__iHC=original_handicap)
+    if final_handicap != '':
+        games = games.filter(footballhistorysummary__fHC=final_handicap)
     params['games'] = games
     return render_to_response("history/football.html", params, context_instance=RequestContext(request))
 
@@ -116,6 +137,7 @@ def parse_serial(game, params):
         details = db_utils.get_odd_details(summary)
         for detail in details:
             time = detail.change_datetime.strftime("%d-%H:%M")
+            logger.info(detail)
             try:
                 x_index = x_names.index(time)
                 if detail.cWO >= FLOAT_THRESHOLD:
@@ -124,9 +146,9 @@ def parse_serial(game, params):
                     lose_rows[summary.vendor].append({'x': x_index, 'y': detail.cLO, 'dt': detail.change_datetime})
                 if detail.cOU >= FLOAT_THRESHOLD:
                     ou_rows[summary.vendor].append({'x': x_index, 'y': float(detail.cOU), 'dt': detail.change_datetime})
-                handicap_rows[summary.vendor].append({'x': x_index, 'y': float(detail.cHC), 'dt': detail.change_datetime})
+                handicap_rows[summary.vendor].append({'x': x_index, 'y': float(detail.cHCW), 'let': float(detail.cHC), 'dt': detail.change_datetime})
             except ValueError as e:
-                logger.exception('time {} is not in x_names, message {}', time, e.message)
+                logger.exception('time {0} is not in x_names, message {1}'.format(time, e.message))
                 pass
 
     for row_key in win_rows.iterkeys():

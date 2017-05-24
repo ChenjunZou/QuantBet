@@ -1,18 +1,44 @@
 <div class="row">
   <form class="form-inline" id="condition-form" method="get">{% csrf_token %}
-    <div class="col-xs-2">
+    <div class="col-cxs-2">
       <label>起始时间:</label>
       <input type="text" class="form-control input-with-label" data-field="date" data-format="yyyy-MM-dd" id="start_date" name="start_date" readonly value="{{ start_date|date:"Y-m-d" }}">
     </div>
-    <div class="col-xs-2">
+    <div class="col-cxs-2">
       <label>终止时间:</label>
       <input type="text" class="form-control input-with-label" data-field="date" data-format="yyyy-MM-dd" id="end_date" name="end_date" value="{{ end_date|date:"Y-m-d" }}">
     </div>
-    <div class="col-xs-2">
+    <div class="col-cxs-1">
+      <label>联赛</label>
       <input type="text" class="form-control input-small" id="league_name" name="league_name" placeholder="联赛" value="{{ league_name }}">
     </div>
-    <div class="col-xs-2">
+    <div class="col-cxs-1">
+      <label>球队</label>
       <input type="text" class="form-control input-small" id="team" name="team" placeholder="球队" value="{{ team }}">
+    </div>
+    <div class="col-cxs-1">
+      <label>主队</label>
+      <input type="text" class="form-control input-small" id="original_handicap_host" name="original_handicap_host" placeholder="1.00" value="{{ original_handicap_host }}">
+    </div>
+    <div class="col-cxs-1">
+      <label>初盘</label>
+      <input type="text" class="form-control input-small" id="original_handicap" name="original_handicap" placeholder="初盘" value="{{ original_handicap }}">
+    </div>
+    <div class="col-cxs-1">
+      <label>客队</label>
+      <input type="text" class="form-control input-small" id="original_handicap_away" name="original_handicap_away" placeholder="1.00" value="{{ original_handicap_away }}">
+    </div>
+    <div class="col-cxs-1">
+      <label>主队</label>
+      <input type="text" class="form-control input-small" id="final_handicap_away" name="final_handicap_away" placeholder="1.00" value="{{ final_handicap_away }}">
+    </div>
+    <div class="col-cxs-1">
+      <label>终盘</label>
+      <input type="text" class="form-control input-small" id="final_handicap" name="final_handicap" placeholder="终盘" value="{{ final_handicap }}">
+    </div>
+    <div class="col-cxs-1">
+      <label>客队</label>
+      <input type="text" class="form-control input-small" id="final" name="final_handicap_away" placeholder="1.00" value="{{ final_handicap_away }}">
     </div>
  <!--
     <div class="col-xs-2">
@@ -25,7 +51,8 @@
     </div>
     -->
     <div class="col-cxs-1">
-      <button type="submit" class="btn btn-default">Filter</button>
+      <label>搜索</label>
+      <button type="submit" class="btn btn-default">搜索</button>
     </div>
   </form>
   <div id="dtBox"></div>
